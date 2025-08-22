@@ -37,7 +37,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
-
+    permissions:
+      contents: write # <-- 这一行是新增的，用于解决 403 权限错误
     steps:
     - name: Checkout
       uses: actions/checkout@main
@@ -221,7 +222,10 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=RAX3000Q-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        # 原始的标签生成方式，可能会重复
+        # echo "release_tag=RAX3000Q-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        # 修改为更具唯一性的标签生成方式，例如包含工作流运行ID
+        echo "release_tag=RAX3000Q-$(date +"%Y.%m.%d-%H%M")-${{ github.run_id }}" >> $GITHUB_OUTPUT
         touch release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
